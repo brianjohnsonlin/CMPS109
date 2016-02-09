@@ -1,0 +1,95 @@
+1.  vfs/proto.h add:
+_PROTOTYPE( int do_metaread, (void)					);
+_PROTOTYPE( int do_metawrite, (void)					);
+
+2. vfs/read.c add:
+PUBLIC int do_metaread()
+{
+  message m;
+  printf("metareading\n");
+ /*printf("meta: returned %d\n", (int) _syscall(MFS_PROC_NR, 33, &m));*/
+  return(read_write(READING));
+}
+
+PUBLIC int do_metawrite()
+{
+  message m;
+  printf("metawriting\n");
+ /* printf("meta: returned %d\n", (int) _syscall(MFS_PROC_NR, 33, &m));*/
+  return(read_write(WRITING));
+}
+
+3. vfs/table.c
+change 105 = do_metaread
+change 106 = do_metawrite
+
+
+4. mfs/proto.h add:
+_PROTOTYPE( int fs_meta_readwrite, (void)				);
+
+5. mfs/read.c add
+PUBLIC int fs_meta_readwrite(void)
+{
+  the actual function;
+}
+
+maybe:
+ int r, rw_flag;
+  struct inode *rip;
+  size_t nrbytes;
+  short scale;
+  block_t b;
+  char *bp;
+
+printf("meta_readwrite: returned OK");
+return OK;
+
+  /* Find the inode referred */
+  if ((rip = find_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
+	return(EINVAL);
+
+  /* Find out if the request was a read or write */
+  rw_flag = (fs_m_in.m_type == REQ_READ ? READING : WRITING);
+
+  /* Allocate zone if it doesn't have one and do read/write otherwise */
+  scale = rip->i_sp->s_log_zone_size;
+  if (rip->i_zone[9] == NO_ZONE) {
+    rip->i_zone[9] = alloc_zone(rip->i_dev, rip->i_zone[9]);
+    b = (block_t)rip->i_zone[9] << scale;
+    bp = (char *)get_block(rip->i_dev, b, NORMAL);
+    zero_block((struct buf *)bp);
+    /*
+    if (rw_flag == WRITING) {
+      bp = fs_m_in.some_message;
+      printf("fs_meta_readwrite: Metadata written successfully\n");
+    } else if (rw_flag == READING) {
+      printf("fs_meta_readwrite: File has no metadata\n");
+      zero_block((struct buf *)bp);
+    }
+    */
+  } else {
+    b = (block_t)rip->i_zone[9] << scale;
+    bp = (char *)get_block(rip->i_dev, b, NORMAL);
+    /*
+    if (rw_flag == WRITING) {
+      bp = fs_m_in.some_message;
+      printf("fs_meta_readwrite: Metadata is overwritten\n");
+    } else if (rw_flag == READING) {
+      printf("fs_meta_readwrite:\n%s\n", bp);
+    }
+    */
+  }
+  return OK;
+
+
+6. mfs/table.c  add:
+fs_meta_readwrite /* 33 */
+
+
+7. minix/callnr.h add:
+#define METAREAD 105
+#define METAWRITE 106
+
+
+
+

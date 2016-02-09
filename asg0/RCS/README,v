@@ -1,0 +1,51 @@
+head	1.2;
+access;
+symbols;
+locks;
+comment	@# @;
+
+
+1.2
+date	2014.06.11.03.13.44;	author -;	state -;
+branches;
+next	1.1;
+
+1.1
+date	2014.06.11.03.09.51;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@-
+@
+text
+@# $Id: README,v 1.1 2014-06-10 20:09:51-07 - - $
+
+Make sure you know how to submit files.  Submit these files
+to asg0.  Verify that the submit actually worked by looking
+in the submit directory for your username.
+
+The find(1) command is very useful for things like this.
+
+This asg0 will not be graded and there is no credit for it.
+Experience with Unix is assumed.  Attend a lab section to ask
+questions if you don't understand how submit works.
+@
+
+
+1.1
+log
+@-
+@
+text
+@d1 1
+a1 1
+# $Id$
+d9 3
+@
